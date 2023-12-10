@@ -1,0 +1,355 @@
+﻿LLIBRERIA STL (Standard Template Library)
+=========================================
+
+És una col·lecció de plantilles per a diversos contenidors (vectors,
+piles, cues, etc.) que ja no caldrà que implementem.
+
+A continuació es fa un descripció breu. Podeu trobar més informació al
+jutge, secció "Documentation -> Cheat sheets", on hi ha els documents
+"C++ Reference" i "Xuleta EDA". Aquest material estarà disponible el
+dia de l'examen.
+
+Tots els costos que donarem (a no ser que es digui el contrari) són en
+el cas pitjor.
+
+PAIRS
+=====
+
+Els pairs permeten formar parells amb un valor de tipus T1 i un
+valor de tipus T2.
+
+pair<T1,T2> és equivalent a
+
+struct pair {
+  T1 first;
+  T2 second;
+};
+
+S'accedeix als valors amb els camps "first" i "second".
+
+Els pairs són útils perquè algunes funcions de la STL necessiten
+retornar 2 valors, i en aquest cas s'utilitzen pairs per
+fer-ho. A més, també van bé perquè tenen alguns operadors ja definits:
+
+* operador d'igualtat == (component a component)
+* operadors de comparació (lexicogràficament)
+
+Ex.
+
+  pair<double, char> a(2.5, 'A');
+  pair<double, char> b;
+  b.first = 3.5;
+  b.second = 'B';
+  cout << (a == make_pair(2.5, 'A')) << endl;  // --> 1
+  cout << (a < b) << endl;                     // --> 1
+
+================================================================
+
+A continuació veurem les següents classes:
+
+priority_queue<T>   (cua de prioritats)
+set<T>              (conjunt)
+map<K,V>            (diccionari)
+
+La STL està pensada per oferir una interfície el més uniforme
+possible. En particular, hi ha diversos mètodes que són comuns:
+
+bool empty() const       : diu si el contenidor és buit    Cost: Theta(1)
+unsigned int size() const: retorna la mida del contenidor  Cost: Theta(1)
+
+
+
+PRIORITY QUEUE
+==============
+
+Una priority_queue<T> és una cua de prioritats de T. L'element més gran
+guardat a la cua de prioritats és el primer que surt.
+
+Cal fer: #include <queue>
+
+void push(const T& x): afegeix x                   Cost: Theta(log n)
+void pop ()          : elimina l'element més gran  Cost: Theta(log n)
+const T& top() const : retorna l'element més gran  Cost: Theta(1)
+
+Ex. (llegeix una seqüència d'enters i l'escriu ordenada de forma
+decreixent -> Heapsort)
+
+int main() {
+  priority_queue<int> pq;
+  int x;
+  while (cin >> x) pq.push(x);
+  while (not pq.empty()) {
+    cout << pq.top() << endl;
+    pq.pop();
+  }
+}
+
+
+SET
+===
+
+Un set<T> és un conjunt de T.
+
+Els elements del conjunt es guarden ordenats de menor a major.
+
+(internament estan implementats amb arbres binaris de cerca balancejats)
+
+Cal fer: #include <set>
+
+Assumim que iterator és sinònim de set<T>::iterator.
+
+Un iterator it es mou cap endavant amb ++it i cap endarrera amb --it
+
+Per accedir a l'element apuntat per un iterator it: *it
+
+................................................................
+
+pair<iterator,bool> insert ( const T& x );
+
+Afegeix x al conjunt.
+
+Si no hi era, retorna un iterador que apunta on s'ha ficat x, i true.
+
+Sinó retorna un iterador que apunta on ja hi havia x, i false.
+
+Cost: Theta(log n)
+
+................................................................
+
+iterator begin(): retorna l'iterador a l'element més petit
+iterator end  (): retorna l'iterador al següent de l'element més gran
+
+Cost: Theta(1)
+
+................................................................
+
+iterator find ( const T& x ) const
+
+Busca l'element x al conjunt.
+Si el troba, retorna un iterador que hi apunta.
+Sinó retorna end().
+
+Cost Theta(log n)
+
+................................................................
+
+void erase ( iterator it )
+
+Elimina l'element apuntat per it.
+
+Cost: Theta(1) amortit
+
+int erase ( const T& x ):
+
+Si x pertany al conjunt, l'elimina i retorna 1.
+Sinó retorna 0.
+
+Cost: Theta(log n)
+
+Ex. (llegeix dues seqüències d'enters acabades en zero i escriu seva
+intersecció)
+
+int main() {
+  set<int> s1, s2;
+  int x;
+  while (cin >> x and x != 0) s1.insert(x);
+  while (cin >> x and x != 0) s2.insert(x);
+
+  for (set<int>::iterator it = s1.begin(); it != s1.end(); ++it)
+    if (s2.find(*it) != s2.end())
+      cout << *it << endl;
+}
+
+
+MAP
+===
+
+Un map<K,V> és un diccionari de claus K i valors V. Es comporta de
+manera semblant a un conjunt de parells (clau, valor) (és a dir,
+set<pair<K,V> >) on no es poden repetir claus.
+
+Els parells estan ordenats per clau de menor a major.
+
+(internament estan implementats amb arbres binaris de cerca balancejats)
+
+Cal fer: #include <map>
+
+Assumim que iterator és sinònim de map<K,V>::iterator.
+
+Un iterator it es mou cap endavant amb ++it i cap endarrera amb --it
+Per accedir al parell apuntat  per it:  *it
+Per accedir a la clau apuntada per it: (*it).first  o it->first
+Per accedir al valor apuntat   per it: (*it).second o it->second
+
+................................................................
+
+pair<iterator,bool> insert ( const pair<K,V>& p );
+
+Afegeix el parell p.
+
+Si no hi havia cap parell amb aquesta clau, retorna un iterador que
+apunta on s'ha ficat p, i true.
+
+Sinó retorna l'iterador que apunta al parell que ja hi havia amb la
+mateixa clau, i false.
+
+Cost: Theta(log n)
+
+................................................................
+
+iterator begin(): retorna l'iterador al parell amb clau més petita
+iterator end  (): retorna l'iterador al següent al parell amb clau més gran
+
+Cost: Theta(1)
+
+................................................................
+
+iterator find ( const K& k ) const
+
+Busca un parell amb clau k.
+Si el troba, retorna un iterador que hi apunta.
+Sinó retorna end().
+
+Cost Theta(log n)
+
+................................................................
+
+void erase ( iterator it )
+
+Elimina el parell apuntat per it.
+
+Cost: Theta(1) amortit
+
+int erase ( const K& k ):
+
+Si hi ha un parell amb clau k, l'elimina i retorna 1.
+Sinó retorna 0.
+
+Cost: Theta(log n)
+
+................................................................
+
+Ex.
+
+typedef pair<char,int> P;
+typedef  map<char,int> M;
+
+int main () {
+
+  M m;
+
+  m.insert( P('a', 10) );
+  m.insert( make_pair('c', 30) );
+  m['d'] = 40;
+
+//    L'operador [ ] admet com a argument una clau k. Llavors:
+//
+//    Si ja hi havia un parell amb la clau, es retorna una referència al
+//    camp second (valor) del parell que ja existia amb aquesta clau.
+//
+//    Sino, s'inserta un parell amb aquesta clau i el constructor per
+//    defecte del tipus V (per ex., per a tipus bàsics de C++
+//    numèrics, assigna a 0). Llavors es retorna una referència al
+//    camp second (valor) d'aquest parell.
+
+  m.erase('c');
+
+  for (it = m.begin(); it != m.end(); ++it)
+    cout << it->first << " " << it->second << endl;
+}
+
+té sortida
+
+a 10
+d 40
+
+
+NOVETATS C++11
+==============
+
+* Cal compilar amb g++ -std=c++11
+
+* Si el compilador pot inferir el tipus d'una variable a la
+  declaració, en lloc de posar el tipus de la variable, es pot
+  escriure "auto".
+
+  map<string, int> m;
+  auto it = m.find("hello");
+
+  
+* A més, els bucles for s'han modificat per poder iterar fàcilment
+  sobre col·leccions.
+
+  set<int> s;
+  ...
+  for(int x : s) cout << x << endl;
+  cout << endl;
+
+  
+* Ja no cal posar un espai entre els >> dels templates.
+
+  vector<vector<int>> matrix;
+
+  
+* Es poden donar llistes d'inicialitzacions a contenidors de la STL.
+
+  vector<int>   v = {0, 1, 2};
+  set<set<int>> s = {{2,3}, {5,1,5}, {}, {3}};
+
+
+UNORDERED_SET
+=============
+
+Com el set, però no es garanteix que recórrer el set des de begin()
+fins a end() respecti l'ordre dels elements.
+
+insert, find, erase funcionen en temps lineal en el cas pitjor, però
+en temps constant en mitjana.
+
+(internament estan implementats amb taules de hash)
+
+#include <iostream>
+#include <unordered_set>
+
+using namespace std;
+
+int main() {
+
+  unordered_set<int> s1, s2;
+  int x;
+
+  while (cin >> x and x != 0)
+    s1.insert(x);
+  
+  while (cin >> x and x != 0)
+    s2.insert(x);
+
+  for (auto y : s1) 
+    if (s2.find(y) != s2.end()) 
+      cout << x << endl;
+}
+
+
+UNORDERED_MAP
+=============
+
+Com el map, però no es garanteix que recórrer el map des de begin()
+fins a end() respecti l'ordre de les claus.
+
+insert, find, erase funcionen en temps lineal en el cas pitjor, però
+en temps constant en mitjana.
+
+(internament estan implementats amb taules de hash)
+
+#include <unordered_map>
+#include <iostream>
+
+using namespace std;
+
+int main() {
+  unordered_map<string, int> m;
+  string x;
+  while (cin >> x) ++m[x];
+  for(auto p : m)
+    cout << p.first << " " << p.second << endl;
+}
